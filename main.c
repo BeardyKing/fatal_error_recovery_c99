@@ -93,21 +93,9 @@ static void script_thread_entry_point(void) {
     }
 }
 
-static void script_thread_create(void){
-    DWORD scrThreadId = {};
-    HANDLE scrThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) script_thread_entry_point, NULL, 0, &scrThreadId);
-    debug_assert(scrThread);
-}
-
 static void crash_thread_entry_point(void){
     Sleep(5000);
     debug_assert(false);
-}
-
-static void crash_thread_create(void){
-    DWORD scrThreadId = {};
-    HANDLE scrThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) crash_thread_entry_point, NULL, 0, &scrThreadId);
-    debug_assert(scrThread);
 }
 
 static LONG exception_handler_callback(struct _EXCEPTION_POINTERS *exceptionInfo){
@@ -123,8 +111,8 @@ int main(void) {
     AddVectoredExceptionHandler(0, exception_handler_callback);
     tls_thread_desc_create();
 
-    script_thread_create();
-    crash_thread_create();
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) script_thread_entry_point, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) crash_thread_entry_point, NULL, 0, NULL);
 
     volatile bool shouldExit = false;
     while(!shouldExit){
